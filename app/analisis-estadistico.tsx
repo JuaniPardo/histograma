@@ -8,10 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart } from 'recharts'
 import { useTheme } from "next-themes"
 
-export default function Component() {
+export default function AnalisisEstadistico() {
     const [inputValues, setInputValues] = useState('')
     const [results, setResults] = useState(null)
     const [manualIntervals, setManualIntervals] = useState(false)
@@ -96,6 +96,9 @@ export default function Component() {
         })
     }
 
+    const getPrimaryColor = () => theme === 'dark' ? '#00ffff' : '#ff69b4'
+    const getSecondaryColor = () => theme === 'dark' ? '#ff69b4' : '#00ffff'
+
     return (
         <div className="container mx-auto p-4 space-y-4">
             <div className="flex justify-end mb-4">
@@ -104,12 +107,12 @@ export default function Component() {
                     checked={theme === 'dark'}
                     onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
                 />
-                <Label htmlFor="dark-mode" className="ml-2 text-primary">Modo Oscuro</Label>
+                <Label htmlFor="dark-mode" className="ml-2 text-primary-light dark:text-primary-dark">Modo Oscuro</Label>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-primary">Análisis Estadístico Mejorado</CardTitle>
+                    <CardTitle className="text-primary-light dark:text-primary-dark">Análisis Estadístico Mejorado</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
@@ -118,9 +121,14 @@ export default function Component() {
                                 placeholder="Ingrese valores separados por comas"
                                 value={inputValues}
                                 onChange={(e) => setInputValues(e.target.value)}
-                                className="border-primary"
+                                className="border-primary-light dark:border-primary-dark"
                             />
-                            <Button onClick={calculateStatistics} className="bg-primary text-primary-foreground hover:bg-primary/90">Calcular</Button>
+                            <Button
+                                onClick={calculateStatistics}
+                                className="bg-primary-light text-foreground-light hover:bg-primary-light/90 dark:bg-primary-dark dark:text-foreground-dark dark:hover:bg-primary-dark/90"
+                            >
+                                Calcular
+                            </Button>
                         </div>
                         <div className="flex items-center space-x-2">
                             <Switch
@@ -128,11 +136,11 @@ export default function Component() {
                                 checked={manualIntervals}
                                 onCheckedChange={setManualIntervals}
                             />
-                            <Label htmlFor="manual-intervals" className="text-primary">Intervalos manuales</Label>
+                            <Label htmlFor="manual-intervals" className="text-primary-light dark:text-primary-dark">Intervalos manuales</Label>
                         </div>
                         {manualIntervals && results && (
                             <div className="space-y-2">
-                                <Label htmlFor="interval-adjustment" className="text-primary">Ajuste de intervalos</Label>
+                                <Label htmlFor="interval-adjustment" className="text-primary-light dark:text-primary-dark">Ajuste de intervalos</Label>
                                 <Slider
                                     id="interval-adjustment"
                                     min={-5}
@@ -140,7 +148,7 @@ export default function Component() {
                                     step={1}
                                     value={[intervalAdjustment]}
                                     onValueChange={(value) => setIntervalAdjustment(value[0])}
-                                    className="bg-primary"
+                                    className="bg-primary-light dark:bg-primary-dark"
                                 />
                                 <div className="text-sm text-muted-foreground">
                                     Intervalos: {results.sturgesK + intervalAdjustment}
@@ -153,10 +161,10 @@ export default function Component() {
                                 checked={roundUp}
                                 onCheckedChange={setRoundUp}
                             />
-                            <Label htmlFor="round-up" className="text-primary">Redondear hacia arriba</Label>
+                            <Label htmlFor="round-up" className="text-primary-light dark:text-primary-dark">Redondear hacia arriba</Label>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="interval-width-adjustment" className="text-primary">Ajuste de amplitud del intervalo</Label>
+                            <Label htmlFor="interval-width-adjustment" className="text-primary-light dark:text-primary-dark">Ajuste de amplitud del intervalo</Label>
                             <Slider
                                 id="interval-width-adjustment"
                                 min={-5}
@@ -164,7 +172,7 @@ export default function Component() {
                                 step={0.1}
                                 value={[intervalWidthAdjustment]}
                                 onValueChange={(value) => setIntervalWidthAdjustment(value[0])}
-                                className="bg-primary"
+                                className="bg-primary-light dark:bg-primary-dark"
                             />
                             <div className="text-sm text-muted-foreground">
                                 Ajuste: {intervalWidthAdjustment.toFixed(1)}
@@ -178,7 +186,7 @@ export default function Component() {
                 <>
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-primary">Histograma y Frecuencia Relativa Acumulada</CardTitle>
+                            <CardTitle className="text-primary-light dark:text-primary-dark">Histograma y Frecuencia Relativa Acumulada</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ResponsiveContainer width="100%" height={400}>
@@ -199,8 +207,8 @@ export default function Component() {
                                             }
                                         }}
                                     />
-                                    <Bar dataKey="frequency" name="Frecuencia" fill="var(--primary)" yAxisId="left" />
-                                    <Line type="monotone" dataKey="cumulativeRelativeFrequency" name="Frecuencia Relativa Acumulada" stroke="var(--secondary)" strokeWidth={2} yAxisId="right" />
+                                    <Bar dataKey="frequency" name="Frecuencia" fill={getPrimaryColor()} yAxisId="left" />
+                                    <Line type="monotone" dataKey="cumulativeRelativeFrequency" name="Frecuencia Relativa Acumulada" stroke={getSecondaryColor()} strokeWidth={2} yAxisId="right" />
                                 </ComposedChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -208,33 +216,33 @@ export default function Component() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-primary">Estadísticas Básicas</CardTitle>
+                            <CardTitle className="text-primary-light dark:text-primary-dark">Estadísticas Básicas</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell className="font-medium text-primary">Mínimo</TableCell>
+                                        <TableCell className="font-medium text-primary-light dark:text-primary-dark">Mínimo</TableCell>
                                         <TableCell>{results.min.toFixed(2)}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell className="font-medium text-primary">Máximo</TableCell>
+                                        <TableCell className="font-medium text-primary-light dark:text-primary-dark">Máximo</TableCell>
                                         <TableCell>{results.max.toFixed(2)}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell className="font-medium text-primary">Rango</TableCell>
+                                        <TableCell className="font-medium text-primary-light dark:text-primary-dark">Rango</TableCell>
                                         <TableCell>{results.range.toFixed(2)}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell className="font-medium text-primary">Cantidad de muestras</TableCell>
+                                        <TableCell className="font-medium text-primary-light dark:text-primary-dark">Cantidad de muestras</TableCell>
                                         <TableCell>{results.n}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell className="font-medium text-primary">Número de intervalos</TableCell>
+                                        <TableCell className="font-medium text-primary-light dark:text-primary-dark">Número de intervalos</TableCell>
                                         <TableCell>{results.k}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell className="font-medium text-primary">Amplitud del intervalo</TableCell>
+                                        <TableCell className="font-medium text-primary-light dark:text-primary-dark">Amplitud del intervalo</TableCell>
                                         <TableCell>{results.intervalWidth.toFixed(2)}</TableCell>
                                     </TableRow>
                                 </TableBody>
@@ -244,18 +252,18 @@ export default function Component() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-primary">Tabla de Frecuencias</CardTitle>
+                            <CardTitle className="text-primary-light dark:text-primary-dark">Tabla de Frecuencias</CardTitle>
                         </CardHeader>
                         <CardContent className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="text-primary">Intervalo</TableHead>
-                                        <TableHead className="text-primary">Marca de Clase</TableHead>
-                                        <TableHead className="text-primary">Frecuencia Absoluta</TableHead>
-                                        <TableHead className="text-primary">Frecuencia Relativa</TableHead>
-                                        <TableHead className="text-primary">Frecuencia Acumulada</TableHead>
-                                        <TableHead className="text-primary">Frecuencia Relativa Acumulada</TableHead>
+                                        <TableHead className="text-primary-light dark:text-primary-dark">Intervalo</TableHead>
+                                        <TableHead className="text-primary-light dark:text-primary-dark">Marca de Clase</TableHead>
+                                        <TableHead className="text-primary-light dark:text-primary-dark">Frecuencia Absoluta</TableHead>
+                                        <TableHead className="text-primary-light dark:text-primary-dark">Frecuencia Relativa</TableHead>
+                                        <TableHead className="text-primary-light dark:text-primary-dark">Frecuencia Acumulada</TableHead>
+                                        <TableHead className="text-primary-light dark:text-primary-dark">Frecuencia Relativa Acumulada</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
