@@ -226,9 +226,11 @@ export default function AnalisisEstadistico() {
                             <CardContent>
                                 <ResponsiveContainer width="100%" height={400}>
                                     <ComposedChart data={results.intervals}>
-                                        <XAxis dataKey="mark" tickFormatter={(value) => value.toFixed(2)}/>
+                                        <XAxis dataKey="mark"
+                                               tickFormatter={(value) => value.toFixed(2)}/>
                                         <YAxis yAxisId="left"/>
-                                        <YAxis yAxisId="right" orientation="right"
+                                        <YAxis yAxisId="right"
+                                               orientation="right"
                                                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}/>
                                         <Tooltip
                                             labelFormatter={(value) => `Marca de clase: ${Number(value).toFixed(2)}`}
@@ -257,11 +259,20 @@ export default function AnalisisEstadistico() {
                                                 color: theme === 'dark' ? '#ffffff' : '#000000',
                                             }}
                                         />
-                                        <Bar dataKey="frequency" name="Frecuencia" fill={getPrimaryColor()}
-                                             yAxisId="left"/>
-                                        <Line type="monotone" dataKey="cumulativeRelativeFrequency"
-                                              name="Frecuencia Relativa Acumulada" stroke={getSecondaryColor()}
-                                              strokeWidth={3} yAxisId="right"/>
+                                        <Bar
+                                            dataKey="frequency"
+                                            name="Frecuencia"
+                                            fill={getPrimaryColor()}
+                                            yAxisId="left"
+                                            barSize={100}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="cumulativeRelativeFrequency"
+                                            name="Frecuencia Relativa Acumulada"
+                                            stroke={getSecondaryColor()}
+                                            strokeWidth={3}
+                                            yAxisId="right"/>
                                     </ComposedChart>
                                 </ResponsiveContainer>
                             </CardContent>
