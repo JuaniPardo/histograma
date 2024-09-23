@@ -242,6 +242,20 @@ export default function AnalisisEstadistico() {
                                                         return [value, name];
                                                 }
                                             }}
+                                            contentStyle={{
+                                                backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                                                border: `1px solid ${theme === 'dark' ? '#ffffff' : '#000000'}`,
+                                                borderRadius: '4px',
+                                                padding: '10px',
+                                            }}
+                                            labelStyle={{
+                                                color: theme === 'dark' ? '#ffffff' : '#000000',
+                                                fontWeight: 'bold',
+                                                marginBottom: '5px',
+                                            }}
+                                            itemStyle={{
+                                                color: theme === 'dark' ? '#ffffff' : '#000000',
+                                            }}
                                         />
                                         <Bar dataKey="frequency" name="Frecuencia" fill={getPrimaryColor()}
                                              yAxisId="left"/>
