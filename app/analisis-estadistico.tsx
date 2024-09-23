@@ -40,6 +40,9 @@ export default function AnalisisEstadistico() {
     const [roundUp, setRoundUp] = useState(false)
     const [intervalWidthAdjustment, setIntervalWidthAdjustment] = useState(0)
     const {theme, setTheme} = useTheme()
+    const [showRangeSelector, setShowRangeSelector] = useState(false)
+    const [selectedRange, setSelectedRange] = useState<[number, number]>([0, 100])
+    const [accumulatedFrequency, setAccumulatedFrequency] = useState<number | null>(null)
 
     useEffect(() => {
         setTheme('dark')
@@ -116,6 +119,29 @@ export default function AnalisisEstadistico() {
             sturgesK
         })
     }
+
+    const calculateAccumulatedFrequency = () => {
+        if (!results) return
+
+        const minValue = results.min + (selectedRange[0] / 100) * results.range
+        const maxValue = results.min + (selectedRange[1] / 100) * results.range
+
+        const accFrequency = results.intervals.reduce((acc, interval) => {
+            if (interval.end >= minValue && interval.start <= maxValue) {
+                return acc + interval.relativeFrequency
+            }
+            return acc
+        }, 0)
+
+        setAccumulatedFrequency(accFrequency)
+    }
+
+
+    useEffect(() => {
+        if (showRangeSelector && results) {
+            calculateAccumulatedFrequency()
+        }
+    }, [showRangeSelector, selectedRange, results])
 
     const getPrimaryColor = () => theme === 'dark' ? '#00c5c5' : '#ff69b4'
     const getSecondaryColor = () => theme === 'dark' ? '#ff69b4' : '#00c5c5'
@@ -211,6 +237,40 @@ export default function AnalisisEstadistico() {
                                     Ajuste: {intervalWidthAdjustment.toFixed(1)}
                                 </div>
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    id="range-selector"
+                                    checked={showRangeSelector}
+                                    onCheckedChange={setShowRangeSelector}
+                                />
+                                <Label htmlFor="range-selector" className="text-primary-light dark:text-primary-dark">
+                                    Seleccionar rango para frecuencia acumulada
+                                </Label>
+                            </div>
+                            {showRangeSelector && results && (
+                                <div className="space-y-2">
+                                    <Slider
+                                        min={0}
+                                        max={100}
+                                        step={1}
+                                        value={selectedRange}
+                                        onValueChange={(value: [number, number]) => setSelectedRange(value)}
+                                        className="bg-primary-light dark:bg-primary-dark"
+                                    />
+                                    <div className="flex justify-between text-sm text-muted-foreground">
+                                        <span>{results.min.toFixed(2)}</span>
+                                        <span>{results.max.toFixed(2)}</span>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        Rango seleccionado: {(results.min + (selectedRange[0] / 100) * results.range).toFixed(2)} - {(results.min + (selectedRange[1] / 100) * results.range).toFixed(2)}
+                                    </div>
+                                    {accumulatedFrequency !== null && (
+                                        <div className="text-sm font-medium text-primary-light dark:text-primary-dark">
+                                            Frecuencia acumulada en el rango: {(accumulatedFrequency * 100).toFixed(2).concat('%')}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
