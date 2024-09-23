@@ -12,8 +12,29 @@ import {Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart} fr
 import {useTheme} from "next-themes"
 
 export default function AnalisisEstadistico() {
+    interface Interval {
+        start: number
+        end: number
+        frequency: number
+        relativeFrequency: number
+        cumulativeFrequency: number
+        cumulativeRelativeFrequency: number
+        mark: number
+    }
+
+    interface Results {
+        min: number
+        max: number
+        range: number
+        n: number
+        k: number
+        intervalWidth: number
+        intervals: Interval[]
+        sturgesK: number
+    }
+
     const [inputValues, setInputValues] = useState('')
-    const [results, setResults] = useState(null)
+    const [results, setResults] = useState<Results | null>(null)
     const [manualIntervals, setManualIntervals] = useState(false)
     const [intervalAdjustment, setIntervalAdjustment] = useState(0)
     const [roundUp, setRoundUp] = useState(false)
@@ -34,13 +55,13 @@ export default function AnalisisEstadistico() {
         const values = inputValues.split(',').map(Number).filter(n => !isNaN(n))
         if (values.length === 0) return
 
-        const min = Math.min(...values)
-        const max = Math.max(...values)
-        const range = max - min
-        const n = values.length
+        const min: number = Math.min(...values)
+        const max: number = Math.max(...values)
+        const range: number = max - min
+        const n: number = values.length
 
-        const sturgesK = Math.ceil(1 + 3.322 * Math.log10(n))
-        const k = manualIntervals ? Math.max(1, sturgesK + intervalAdjustment) : sturgesK
+        const sturgesK: number = Math.ceil(1 + 3.322 * Math.log10(n))
+        const k: number = manualIntervals ? Math.max(1, sturgesK + intervalAdjustment) : sturgesK
 
         let intervalWidth = range / k
         intervalWidth += intervalWidthAdjustment
@@ -49,7 +70,7 @@ export default function AnalisisEstadistico() {
             intervalWidth = Math.ceil(intervalWidth)
         }
 
-        const intervals = []
+        const intervals: Interval[] = []
         for (let i = 0; i < k; i++) {
             const start = min + i * intervalWidth
             let end = min + (i + 1) * intervalWidth
@@ -211,7 +232,7 @@ export default function AnalisisEstadistico() {
                                                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}/>
                                         <Tooltip
                                             labelFormatter={(value) => `Marca de clase: ${Number(value).toFixed(2)}`}
-                                            formatter={(value, name) => {
+                                            formatter={(value:number, name:string) => {
                                                 switch (name) {
                                                     case "frequency":
                                                         return [value, "Frecuencia"];
