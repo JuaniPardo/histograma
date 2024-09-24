@@ -10,6 +10,7 @@ import {Switch} from "@/components/ui/switch"
 import {Label} from "@/components/ui/label"
 import {Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart} from 'recharts'
 import {useTheme} from "next-themes"
+import {Range, getTrackBackground} from "react-range"
 
 export default function AnalisisEstadistico() {
     interface Interval {
@@ -53,6 +54,10 @@ export default function AnalisisEstadistico() {
             calculateStatistics()
         }
     }, [manualIntervals, intervalAdjustment, roundUp, intervalWidthAdjustment])
+
+    const handleRangeChange = (values: number[]) => {
+        setSelectedRange(values as [number, number])
+    }
 
     const calculateStatistics = () => {
         const values = inputValues.split(',').map(Number).filter(n => !isNaN(n))
@@ -194,9 +199,11 @@ export default function AnalisisEstadistico() {
                             </div>
                             {manualIntervals && results && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="interval-adjustment"
-                                           className="text-primary-light dark:text-primary-dark">Ajuste de
-                                        intervalos</Label>
+                                    <Label
+                                        htmlFor="interval-adjustment"
+                                           className="text-primary-light dark:text-primary-dark">
+                                        Ajuste de intervalos
+                                    </Label>
                                     <Slider
                                         id="interval-adjustment"
                                         min={-5}
@@ -249,13 +256,67 @@ export default function AnalisisEstadistico() {
                             </div>
                             {showRangeSelector && results && (
                                 <div className="space-y-2">
-                                    <Slider
+                                    <Range
+                                        values={selectedRange}
+                                        step={1}
                                         min={0}
                                         max={100}
-                                        step={1}
-                                        value={selectedRange}
-                                        onValueChange={(value: [number, number]) => setSelectedRange(value)}
-                                        className="bg-primary-light dark:bg-primary-dark"
+                                        onChange={handleRangeChange}
+                                        renderTrack={({ props, children }) => (
+                                            <div
+                                                onMouseDown={props.onMouseDown}
+                                                onTouchStart={props.onTouchStart}
+                                                style={{
+                                                    ...props.style,
+                                                    height: '36px',
+                                                    display: 'flex',
+                                                    width: '100%'
+                                                }}
+                                            >
+                                                <div
+                                                    ref={props.ref}
+                                                    style={{
+                                                        height: '5px',
+                                                        width: '100%',
+                                                        borderRadius: '4px',
+                                                        background: getTrackBackground({
+                                                            values: selectedRange,
+                                                            colors: [theme === 'dark' ? '#EF75B2' : '#1BDBE5', getPrimaryColor(), theme === 'dark' ? '#EF75B2' : '#1BDBE5'],
+                                                            min: 0,
+                                                            max: 100
+                                                        }),
+                                                        alignSelf: 'center'
+                                                    }}
+                                                >
+                                                    {children}
+                                                </div>
+                                            </div>
+                                        )}
+                                        renderThumb={({ props, isDragged }) => (
+                                            <div
+                                                {...props}
+                                                style={{
+                                                    ...props.style,
+                                                    height: '20px',
+                                                    width: '20px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: theme === 'dark' ? '#1BDBE5' : '#EF75B2',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    boxShadow: '0px'
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        height: '16px',
+                                                        width: '16px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: isDragged ? getPrimaryColor() : theme === 'dark' ? '#20242c' : '#fff'
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
                                     />
                                     <div className="flex justify-between text-sm text-muted-foreground">
                                         <span>{results.min.toFixed(2)}</span>
